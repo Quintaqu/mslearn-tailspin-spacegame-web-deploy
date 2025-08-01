@@ -135,12 +135,12 @@ stages:
           - download: current
             artifact: drop
           - task: AzureWebApp@1
-            displayName: 'Azure App Service Deploy: website'
+            displayName: 'Azure App Service Deploy: staging slot'
             inputs:
               azureSubscription: 'Resource Manager - Tailspin - Space Game'
-              deployToSlotOrASE: 'true'
+              deployToSlotOrASE: true
               resourceGroupName: 'tailspin-space-game-rg_group'
-              slotName: 'swap'
+              slotName: 'staging'  # ✅ Corrected from 'swap' to 'staging'
               appName: '$(WebAppNameStaging)'
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
 
@@ -150,6 +150,6 @@ stages:
               azureSubscription: 'Resource Manager - Tailspin - Space Game'
               resourceGroupName: 'tailspin-space-game-rg_group'
               webAppName: '$(WebAppNameStaging)'
-              sourceSlot: 'swap'
+              sourceSlot: 'staging'  # ✅ Corrected from 'swap'
               targetSlot: 'production'
               action: 'Swap Slots'
