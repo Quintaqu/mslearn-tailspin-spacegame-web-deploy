@@ -3,6 +3,8 @@ trigger:
 
 variables:
   buildConfiguration: 'Release'
+  dotnetSdkVersion: '6.x'
+  wwwrootDir: 'Tailspin.SpaceGame.Web/wwwroot'
 
 stages:
 - stage: 'Build'
@@ -12,12 +14,6 @@ stages:
     displayName: 'Build job'
     pool:
       vmImage: 'ubuntu-20.04'
-      demands:
-      - npm
-
-    variables:
-      wwwrootDir: 'Tailspin.SpaceGame.Web/wwwroot'
-      dotnetSdkVersion: '6.x'
 
     steps:
     - task: UseDotNet@2
@@ -33,7 +29,7 @@ stages:
     - script: './node_modules/.bin/node-sass $(wwwrootDir) --output $(wwwrootDir)'
       displayName: 'Compile Sass assets'
 
-    - task: gulp@1
+    - task: Gulp@1
       displayName: 'Run gulp tasks'
 
     - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
@@ -132,15 +128,16 @@ stages:
             inputs:
               azureSubscription: 'Resource Manager - Tailspin - Space Game'
               deployToSlotOrASE: 'true'
-              resourceGroupName: 'tailspin-space-game-rg'
+              resourceGroupName: 'tailspin-space-game-rg_group'
               slotName: 'swap'
               appName: '$(WebAppNameStaging)'
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
+
           - task: AzureAppServiceManage@0
             displayName: 'Swap deployment slots'
             inputs:
               azureSubscription: 'Resource Manager - Tailspin - Space Game'
-              resourceGroupName: 'tailspin-space-game-rg'
+              resourceGroupName: 'tailspin-space-game-rg_group'
               webAppName: '$(WebAppNameStaging)'
               sourceSlot: 'swap'
               targetSlot: 'production'
